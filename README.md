@@ -29,9 +29,43 @@ Frutti kombiniert die Erfolgszutaten der bekanntesten viralen Spiele:
 
 ## Technik
 
-- Reines HTML, CSS und JavaScript – **kein Build-Schritt, keine Abhängigkeiten**.
+- Frontend: reines HTML, CSS und JavaScript – **kein Build-Schritt**.
 - PWA mit Service Worker (offline spielbar) und Manifest.
 - Spielstand, Rekord, Serie und Sammlung in `localStorage`.
+- Optionales Backend: Vercel Serverless Function `api/highscores.js` mit
+  austauschbarem Datenbank-Konnektor `api/_lib/db.js` (PostgreSQL).
+
+## Online-Bestenliste: Datenbank anbinden (optional)
+
+Ohne Datenbank zeigt die App automatisch die lokale Bestenliste des Geräts.
+Sobald eine PostgreSQL-Datenbank verbunden ist, wird die Liste online und
+gilt über alle Geräte hinweg („🌐 Online – alle Geräte").
+
+**So verbindest du Vercel Postgres (Neon):**
+
+1. Im Vercel-Dashboard das Projekt öffnen → Reiter **Storage**.
+2. **Create Database** → **Postgres (Neon)** auswählen und mit dem Projekt
+   verknüpfen. Vercel setzt die Umgebungsvariable `POSTGRES_URL` automatisch.
+3. Neu deployen (oder einfach den nächsten Push abwarten) – fertig.
+   Die Tabelle `highscores` legt der Konnektor beim ersten Aufruf selbst an.
+
+**Andere PostgreSQL-Anbieter** (Supabase, Railway, eigene Instanz):
+Einfach in Vercel unter *Settings → Environment Variables* die Variable
+`DATABASE_URL` mit der Verbindungs-URL setzen.
+
+**Andere Datenbanktypen:** In `api/_lib/db.js` einen weiteren Adapter mit
+den zwei Methoden `top(limit)` und `submit(name, score)` ergänzen.
+
+Die API selbst:
+
+| Methode | Pfad | Beschreibung |
+|---|---|---|
+| `GET` | `/api/highscores` | Top 20, absteigend sortiert |
+| `POST` | `/api/highscores` | `{ "name": "Patrick", "score": 140 }` – es zählt der beste Wert pro Name |
+
+Hinweis: Die Liste ist bewusst einfach gehalten (Name = Eintrag, keine
+Anmeldung). Gleiche Namen auf verschiedenen Geräten teilen sich einen
+Eintrag.
 
 ## Lokal ausprobieren
 
@@ -46,7 +80,7 @@ python3 -m http.server 8000
 ## Tests
 
 ```bash
-node tests/logic.test.js
+npm test   # Spiellogik + Bestenlisten-API (ohne echte Datenbank)
 ```
 
 ## Deployment mit Vercel

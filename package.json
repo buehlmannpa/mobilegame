@@ -1,0 +1,12 @@
+{
+  "name": "frutti",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Frutti – das fröhliche Früchte-Merge-Spiel (PWA mit optionaler Online-Bestenliste)",
+  "scripts": {
+    "test": "node tests/logic.test.js && node tests/api.test.js"
+  },
+  "dependencies": {
+    "pg": "^8.13.1"
+  }
+}

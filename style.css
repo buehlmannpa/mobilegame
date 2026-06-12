@@ -416,6 +416,12 @@ body {
 
 /* ===== Bestenliste ===== */
 
+.hs-mode {
+  margin: -6px 0 10px;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+
 .highscores {
   list-style: none;
   margin: 0 0 14px;

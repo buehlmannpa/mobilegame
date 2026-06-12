@@ -415,6 +415,7 @@ if (typeof document !== 'undefined') {
       if (spawned) makeTileEl(spawned.tile, spawned.r, spawned.c, 'appear');
 
       upsertHighscore();
+      scheduleScoreSubmit();
       updateHud(result.gained > 0);
       animating = false;
 
@@ -445,6 +446,7 @@ if (typeof document !== 'undefined') {
       gameOver = true;
       $('final-score').textContent = score;
       $('overlay-over').classList.remove('hidden');
+      scheduleScoreSubmit(0); // Endstand sofort an die Online-Liste melden
     }
   }
 
@@ -462,12 +464,50 @@ if (typeof document !== 'undefined') {
     highscores = highscores.slice(0, 20);
   }
 
-  function renderHighscores() {
+  /* Online-Anbindung: nutzt /api/highscores, wenn dahinter eine
+     Datenbank konfiguriert ist – sonst lokale Liste als Rückfallebene. */
+  const API_URL = 'api/highscores';
+  let lastSubmittedScore = 0;
+  let submitTimer = null;
+
+  async function fetchOnlineScores() {
+    try {
+      const res = await fetch(API_URL);
+      if (!res.ok) return null;
+      const data = await res.json();
+      return data && data.online && Array.isArray(data.scores) ? data.scores : null;
+    } catch (e) {
+      return null; // offline oder keine Datenbank – lokale Liste genügt
+    }
+  }
+
+  function scheduleScoreSubmit(delay = 1500) {
+    if (!playerName) return;
+    const entry = highscores.find(h => h.name === playerName);
+    if (!entry || entry.score <= lastSubmittedScore) return;
+    clearTimeout(submitTimer);
+    submitTimer = setTimeout(async () => {
+      const value = entry.score;
+      try {
+        const res = await fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name: entry.name, score: value }),
+        });
+        if (res.ok) lastSubmittedScore = value;
+      } catch (e) { /* kein Netz – beim nächsten Mal erneut versuchen */ }
+    }, delay);
+  }
+
+  function renderHighscores(entries, isOnline) {
     const list = $('highscores-list');
     list.innerHTML = '';
-    $('highscores-empty').classList.toggle('hidden', highscores.length > 0);
+    $('highscores-empty').classList.toggle('hidden', entries.length > 0);
+    $('highscores-mode').textContent = isOnline
+      ? '🌐 Online – alle Geräte'
+      : '📱 Auf diesem Gerät';
     const medals = ['🥇', '🥈', '🥉'];
-    highscores.forEach((h, i) => {
+    entries.forEach((h, i) => {
       const li = document.createElement('li');
       if (h.name === playerName) li.classList.add('me');
       const rank = document.createElement('span');
@@ -485,7 +525,9 @@ if (typeof document !== 'undefined') {
   }
 
   function setPlayerName(name) {
-    playerName = name.trim().slice(0, 16) || 'Spieler';
+    const newName = name.trim().slice(0, 16) || 'Spieler';
+    if (newName !== playerName) lastSubmittedScore = 0;
+    playerName = newName;
     $('player-name').textContent = playerName;
     save();
   }
@@ -581,9 +623,13 @@ if (typeof document !== 'undefined') {
       $('modal-highscores').classList.add('hidden');
       openNameModal();
     });
-    $('btn-highscores').addEventListener('click', () => {
-      renderHighscores();
+    $('btn-highscores').addEventListener('click', async () => {
+      renderHighscores(highscores, false);
       $('modal-highscores').classList.remove('hidden');
+      const online = await fetchOnlineScores();
+      if (online && !$('modal-highscores').classList.contains('hidden')) {
+        renderHighscores(online, true);
+      }
     });
     $('form-name').addEventListener('submit', e => {
       e.preventDefault();

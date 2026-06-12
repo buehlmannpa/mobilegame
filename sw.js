@@ -1,6 +1,6 @@
 /* Frutti Service Worker – macht das Spiel offline spielbar */
 
-const CACHE = 'frutti-v1';
+const CACHE = 'frutti-v2';
 const ASSETS = [
   './',
   './index.html',
@@ -28,6 +28,8 @@ self.addEventListener('activate', event => {
 // Netzwerk zuerst (damit Updates ankommen), Cache als Offline-Fallback
 self.addEventListener('fetch', event => {
   if (event.request.method !== 'GET') return;
+  // Bestenlisten-API nie cachen – immer live aus der Datenbank
+  if (new URL(event.request.url).pathname.startsWith('/api/')) return;
   event.respondWith(
     fetch(event.request)
       .then(response => {
