@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#ffd166">
+  <meta name="description" content="Frutti – das fröhliche Früchte-Merge-Spiel für Jung und Alt. Wische, kombiniere Früchte und entdecke alle Sorten. Ohne Zeitdruck, ohne Wettkampf.">
+  <title>Frutti – Das Früchte-Merge-Spiel</title>
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon.svg">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app">
+
+    <header class="header">
+      <h1 class="logo"><span class="logo-emoji">🍉</span> Frutti</h1>
+      <div class="chips">
+        <div class="chip" title="Punkte">
+          <span class="chip-label">Punkte</span>
+          <span class="chip-value" id="score">0</span>
+        </div>
+        <div class="chip" title="Rekord">
+          <span class="chip-label">Rekord</span>
+          <span class="chip-value" id="best">0</span>
+        </div>
+        <div class="chip chip-streak" title="Tage in Folge gespielt">
+          <span class="chip-label">Serie</span>
+          <span class="chip-value"><span id="streak">1</span> 🔥</span>
+        </div>
+      </div>
+    </header>
+
+    <nav class="toolbar">
+      <button class="btn" id="btn-undo" title="Letzten Zug rückgängig machen">↩️<span class="btn-text">Zurück</span></button>
+      <button class="btn" id="btn-new" title="Neues Spiel starten">🌱<span class="btn-text">Neu</span></button>
+      <button class="btn" id="btn-collection" title="Früchte-Sammlung ansehen">📖<span class="btn-text">Sammlung</span></button>
+      <button class="btn" id="btn-help" title="Spielregeln">💡<span class="btn-text">Hilfe</span></button>
+      <button class="btn btn-icon" id="btn-sound" title="Ton an/aus">🔊</button>
+    </nav>
+
+    <main class="board-wrap">
+      <div id="board" aria-label="Spielfeld">
+        <div class="cells" id="cells"></div>
+        <div class="tiles" id="tiles"></div>
+
+        <div class="overlay hidden" id="overlay-win">
+          <div class="overlay-card">
+            <div class="overlay-emoji">🥥🎉</div>
+            <h2>Wunderbar!</h2>
+            <p>Du hast die Kokosnuss erschaffen!<br>Spiele entspannt weiter und finde die Königsfrucht 👑</p>
+            <button class="btn btn-primary" id="btn-continue">Weiterspielen</button>
+            <button class="btn" id="btn-win-new">Neues Spiel</button>
+          </div>
+        </div>
+
+        <div class="overlay hidden" id="overlay-over">
+          <div class="overlay-card">
+            <div class="overlay-emoji">🌸</div>
+            <h2>Das war stark!</h2>
+            <p>Kein Zug mehr möglich.<br>Deine Punkte: <strong id="final-score">0</strong></p>
+            <button class="btn btn-primary" id="btn-over-new">Nochmal spielen</button>
+            <button class="btn" id="btn-over-undo">↩️ Zug zurücknehmen</button>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <p class="hint">Wische auf dem Spielfeld – gleiche Früchte verschmelzen! 🍒+🍒=🍓</p>
+
+  </div>
+
+  <!-- Hilfe-Dialog -->
+  <div class="modal hidden" id="modal-help">
+    <div class="modal-card">
+      <button class="modal-close" data-close aria-label="Schließen">✕</button>
+      <h2>💡 So geht's</h2>
+      <ol class="help-list">
+        <li><strong>Wische</strong> nach oben, unten, links oder rechts – alle Früchte rutschen mit.</li>
+        <li>Treffen <strong>zwei gleiche Früchte</strong> aufeinander, verschmelzen sie zur nächstgrößeren: 🍒+🍒=🍓</li>
+        <li>Entdecke nach und nach <strong>alle 12 Früchte</strong> – bis zur Königsfrucht 👑!</li>
+      </ol>
+      <p class="help-note">🧘 Ganz ohne Zeitdruck: Dein Spiel wird automatisch gespeichert, und mit ↩️ kannst du jeden Zug zurücknehmen. Schau einfach jeden Tag kurz vorbei und verlängere deine Serie 🔥</p>
+    </div>
+  </div>
+
+  <!-- Sammlungs-Dialog -->
+  <div class="modal hidden" id="modal-collection">
+    <div class="modal-card">
+      <button class="modal-close" data-close aria-label="Schließen">✕</button>
+      <h2>📖 Deine Früchte-Sammlung</h2>
+      <div class="collection" id="collection-grid"></div>
+    </div>
+  </div>
+
+  <div class="toast hidden" id="toast"></div>
+  <canvas id="confetti"></canvas>
+
+  <script src="game.js"></script>
+</body>
+</html>

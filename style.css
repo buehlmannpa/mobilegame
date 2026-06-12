@@ -1,0 +1,412 @@
+/* ===== Frutti – fröhliches, helles Design ===== */
+
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+:root {
+  --bg-1: #fff7e0;
+  --bg-2: #ffe3ec;
+  --card: #ffffff;
+  --ink: #5b4636;
+  --ink-soft: #9c8470;
+  --sun: #ffd166;
+  --peach: #ffb4a2;
+  --mint: #b8e0d2;
+  --shadow: 0 6px 20px rgba(91, 70, 54, 0.12);
+  --radius: 18px;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  font-family: ui-rounded, "SF Pro Rounded", "Nunito", "Segoe UI", system-ui, sans-serif;
+  color: var(--ink);
+  background: linear-gradient(160deg, var(--bg-1) 0%, var(--bg-2) 100%);
+  background-attachment: fixed;
+  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  overscroll-behavior: none;
+}
+
+.app {
+  width: 100%;
+  max-width: 480px;
+  padding: 14px 14px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ===== Kopfbereich ===== */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  margin: 0;
+  font-size: 1.9rem;
+  letter-spacing: 0.5px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.logo-emoji {
+  display: inline-block;
+  animation: wobble 3s ease-in-out infinite;
+}
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(-8deg); }
+  50% { transform: rotate(8deg); }
+}
+
+.chips {
+  display: flex;
+  gap: 8px;
+}
+
+.chip {
+  background: var(--card);
+  border-radius: 14px;
+  padding: 6px 12px;
+  text-align: center;
+  box-shadow: var(--shadow);
+  min-width: 64px;
+}
+
+.chip-label {
+  display: block;
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--ink-soft);
+}
+
+.chip-value {
+  font-size: 1.05rem;
+  font-weight: 800;
+}
+
+.chip-value.bump {
+  animation: bump 0.25s ease;
+}
+
+@keyframes bump {
+  50% { transform: scale(1.25); }
+}
+
+/* ===== Werkzeugleiste ===== */
+
+.toolbar {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.btn {
+  font-family: inherit;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--ink);
+  background: var(--card);
+  border: none;
+  border-radius: 14px;
+  padding: 10px 14px;
+  box-shadow: var(--shadow);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: transform 0.1s ease;
+  min-height: 44px;
+}
+
+.btn:active { transform: scale(0.93); }
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.btn-primary {
+  background: var(--sun);
+}
+
+.btn-icon { padding: 10px 12px; }
+
+@media (max-width: 380px) {
+  .btn-text { display: none; }
+  .btn { padding: 10px 12px; }
+}
+
+/* ===== Spielfeld ===== */
+
+.board-wrap {
+  display: flex;
+  justify-content: center;
+}
+
+#board {
+  --gap: clamp(8px, 2.4vw, 13px);
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  aspect-ratio: 1;
+  background: rgba(255, 255, 255, 0.65);
+  border-radius: var(--radius);
+  padding: var(--gap);
+  box-shadow: var(--shadow);
+  touch-action: none;
+  container-type: inline-size;
+}
+
+.cells {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(4, 1fr);
+  gap: var(--gap);
+  width: 100%;
+  height: 100%;
+}
+
+.cell {
+  background: rgba(255, 209, 102, 0.18);
+  border-radius: 14px;
+}
+
+.tiles {
+  position: absolute;
+  inset: var(--gap);
+  --tile: calc((100% - 3 * var(--gap)) / 4);
+}
+
+.tile {
+  position: absolute;
+  width: var(--tile);
+  height: var(--tile);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12cqw;
+  line-height: 1;
+  box-shadow: 0 3px 8px rgba(91, 70, 54, 0.15);
+  transition: top 0.12s ease, left 0.12s ease;
+  user-select: none;
+}
+
+.tile.appear { animation: appear 0.18s ease 0.12s backwards; }
+.tile.pop { animation: pop 0.22s ease; }
+
+@keyframes appear {
+  from { transform: scale(0); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes pop {
+  0% { transform: scale(0.6); }
+  55% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+
+/* Pastellfarben je Frucht-Stufe */
+.tile.l1  { background: #fff0f0; }
+.tile.l2  { background: #ffe4ea; }
+.tile.l3  { background: #f3e6ff; }
+.tile.l4  { background: #ffeacc; }
+.tile.l5  { background: #fffacc; }
+.tile.l6  { background: #ffe0d6; }
+.tile.l7  { background: #dff7e8; }
+.tile.l8  { background: #ffe9dc; }
+.tile.l9  { background: #fdf3d0; }
+.tile.l10 { background: #e3f6dc; }
+.tile.l11 { background: #f0e6d8; }
+.tile.l12 {
+  background: linear-gradient(135deg, #fff3c4, #ffd166, #ffb4a2);
+  box-shadow: 0 0 18px rgba(255, 209, 102, 0.9);
+}
+
+.hint {
+  text-align: center;
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+/* ===== Überlagerungen auf dem Spielfeld ===== */
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(255, 250, 240, 0.88);
+  backdrop-filter: blur(4px);
+  border-radius: var(--radius);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 5;
+  animation: fade-in 0.3s ease;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.overlay-card {
+  text-align: center;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.overlay-emoji { font-size: 3rem; }
+
+.overlay-card h2 { margin: 0; }
+.overlay-card p { margin: 0; color: var(--ink-soft); }
+
+/* ===== Dialoge ===== */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(91, 70, 54, 0.35);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 20;
+  padding: 16px;
+  animation: fade-in 0.2s ease;
+}
+
+.modal-card {
+  position: relative;
+  background: var(--card);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 22px;
+  max-width: 420px;
+  width: 100%;
+  max-height: 80dvh;
+  overflow-y: auto;
+}
+
+.modal-card h2 { margin: 0 0 12px; }
+
+.modal-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: var(--bg-1);
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  font-size: 1rem;
+  cursor: pointer;
+  color: var(--ink);
+}
+
+.help-list {
+  margin: 0;
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.help-note {
+  background: var(--bg-1);
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+/* ===== Sammlung ===== */
+
+.collection {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+.fruit-card {
+  background: var(--bg-1);
+  border-radius: 14px;
+  padding: 12px 6px;
+  text-align: center;
+}
+
+.fruit-card .fruit-emoji {
+  font-size: 2rem;
+  display: block;
+}
+
+.fruit-card .fruit-name {
+  font-size: 0.75rem;
+  font-weight: 700;
+  display: block;
+  margin-top: 4px;
+}
+
+.fruit-card.locked {
+  opacity: 0.55;
+}
+
+.fruit-card.locked .fruit-emoji {
+  filter: grayscale(1) blur(2px);
+}
+
+/* ===== Toast ===== */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: 28px;
+  transform: translateX(-50%);
+  background: var(--ink);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 999px;
+  font-weight: 700;
+  box-shadow: var(--shadow);
+  z-index: 30;
+  animation: toast-in 0.3s ease;
+  white-space: nowrap;
+}
+
+@keyframes toast-in {
+  from { transform: translate(-50%, 20px); opacity: 0; }
+  to { transform: translate(-50%, 0); opacity: 1; }
+}
+
+/* ===== Konfetti ===== */
+
+#confetti {
+  position: fixed;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 40;
+}
+
+.hidden { display: none !important; }
+
+@media (prefers-reduced-motion: reduce) {
+  .tile, .logo-emoji { animation: none !important; transition: none !important; }
+}

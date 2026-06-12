@@ -1,0 +1,26 @@
+{
+  "name": "Frutti – Das Früchte-Merge-Spiel",
+  "short_name": "Frutti",
+  "description": "Wische, kombiniere Früchte und entdecke alle Sorten. Ohne Zeitdruck, ohne Wettkampf – einfach fröhlich.",
+  "lang": "de",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#fff7e0",
+  "theme_color": "#ffd166",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
