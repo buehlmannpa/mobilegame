@@ -21,6 +21,9 @@ Frutti kombiniert die Erfolgszutaten der bekanntesten viralen Spiele:
 - **Wischen** (oder Pfeiltasten / WASD am Computer) bewegt alle Früchte.
 - Zwei gleiche Früchte verschmelzen zur nächstgrößeren: 🍒+🍒=🍓
 - ↩️ nimmt jeden Zug zurück – auch nach „Spielende".
+- 👤 Beim ersten Start gibst du deinen Namen ein (jederzeit änderbar).
+- 🏆 Die Bestenliste zeigt den besten Punktestand pro Spieler auf diesem
+  Gerät – ideal, wenn sich Familie oder Freunde ein Handy teilen.
 - Der Spielstand wird automatisch im Browser gespeichert.
 - Als PWA installierbar („Zum Startbildschirm hinzufügen") und offline spielbar.
 

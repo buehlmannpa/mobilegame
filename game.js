@@ -163,6 +163,8 @@ if (typeof document !== 'undefined') {
   let undoStack = [];
   let soundOn = true;
   let animating = false;
+  let playerName = '';
+  let highscores = []; // [{ name, score }] – bester Punktestand je Spieler
 
   const tileEls = new Map(); // Kachel-ID -> DOM-Element
 
@@ -174,6 +176,7 @@ if (typeof document !== 'undefined') {
       score, best, keepPlaying, gameOver,
       discovered: [...discovered],
       streak, soundOn,
+      playerName, highscores,
     };
     try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); } catch (e) { /* privater Modus */ }
   }
@@ -191,6 +194,8 @@ if (typeof document !== 'undefined') {
       discovered = new Set(data.discovered || [1]);
       streak = data.streak || { last: '', count: 1 };
       soundOn = data.soundOn !== false;
+      playerName = data.playerName || '';
+      highscores = Array.isArray(data.highscores) ? data.highscores : [];
       return true;
     } catch (e) {
       return false;
@@ -409,6 +414,7 @@ if (typeof document !== 'undefined') {
       const spawned = spawnTile(grid);
       if (spawned) makeTileEl(spawned.tile, spawned.r, spawned.c, 'appear');
 
+      upsertHighscore();
       updateHud(result.gained > 0);
       animating = false;
 
@@ -440,6 +446,54 @@ if (typeof document !== 'undefined') {
       $('final-score').textContent = score;
       $('overlay-over').classList.remove('hidden');
     }
+  }
+
+  /* ---------- Bestenliste ---------- */
+
+  function upsertHighscore() {
+    if (!playerName || score <= 0) return;
+    const entry = highscores.find(h => h.name === playerName);
+    if (!entry) {
+      highscores.push({ name: playerName, score });
+    } else if (score > entry.score) {
+      entry.score = score;
+    }
+    highscores.sort((a, b) => b.score - a.score);
+    highscores = highscores.slice(0, 20);
+  }
+
+  function renderHighscores() {
+    const list = $('highscores-list');
+    list.innerHTML = '';
+    $('highscores-empty').classList.toggle('hidden', highscores.length > 0);
+    const medals = ['🥇', '🥈', '🥉'];
+    highscores.forEach((h, i) => {
+      const li = document.createElement('li');
+      if (h.name === playerName) li.classList.add('me');
+      const rank = document.createElement('span');
+      rank.className = 'hs-rank';
+      rank.textContent = medals[i] || `${i + 1}.`;
+      const name = document.createElement('span');
+      name.className = 'hs-name';
+      name.textContent = h.name;
+      const pts = document.createElement('span');
+      pts.className = 'hs-score';
+      pts.textContent = `${h.score} Punkte`;
+      li.append(rank, name, pts);
+      list.appendChild(li);
+    });
+  }
+
+  function setPlayerName(name) {
+    playerName = name.trim().slice(0, 16) || 'Spieler';
+    $('player-name').textContent = playerName;
+    save();
+  }
+
+  function openNameModal() {
+    $('input-name').value = playerName;
+    $('modal-name').classList.remove('hidden');
+    $('input-name').focus();
   }
 
   /* ---------- Sammlung ---------- */
@@ -522,9 +576,34 @@ if (typeof document !== 'undefined') {
     });
 
     $('btn-help').addEventListener('click', () => $('modal-help').classList.remove('hidden'));
+    $('btn-player').addEventListener('click', openNameModal);
+    $('btn-change-name').addEventListener('click', () => {
+      $('modal-highscores').classList.add('hidden');
+      openNameModal();
+    });
+    $('btn-highscores').addEventListener('click', () => {
+      renderHighscores();
+      $('modal-highscores').classList.remove('hidden');
+    });
+    $('form-name').addEventListener('submit', e => {
+      e.preventDefault();
+      const newName = $('input-name').value.trim().slice(0, 16) || 'Spieler';
+      const midGameSwitch = playerName && playerName !== newName && score > 0 && !gameOver;
+      setPlayerName(newName);
+      $('modal-name').classList.add('hidden');
+      showToast(midGameSwitch
+        ? `Hallo ${playerName}! Tipp: Mit 🌱 Neu startest du dein eigenes Spiel.`
+        : `Viel Spaß, ${playerName}! 🍀`, midGameSwitch ? 4000 : 2600);
+    });
     $('btn-collection').addEventListener('click', () => {
       renderCollection();
       $('modal-collection').classList.remove('hidden');
+    });
+
+    $('modal-name').addEventListener('click', e => {
+      if (e.target === $('modal-name') || e.target.hasAttribute('data-close')) {
+        if (!playerName) setPlayerName('Spieler');
+      }
     });
 
     document.querySelectorAll('[data-close]').forEach(btn =>
@@ -563,6 +642,13 @@ if (typeof document !== 'undefined') {
     }
     updateStreak();
     updateHud();
+
+    if (playerName) {
+      $('player-name').textContent = playerName;
+    } else {
+      $('player-name').textContent = 'Spieler';
+      openNameModal();
+    }
 
     if ('serviceWorker' in navigator && location.protocol === 'https:') {
       navigator.serviceWorker.register('sw.js').catch(() => {});

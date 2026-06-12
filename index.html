@@ -16,6 +16,10 @@
 
     <header class="header">
       <h1 class="logo"><span class="logo-emoji">🍉</span> Frutti</h1>
+      <button class="chip chip-player" id="btn-player" title="Namen ändern">
+        <span class="chip-label">Spieler</span>
+        <span class="chip-value" id="player-name">…</span>
+      </button>
       <div class="chips">
         <div class="chip" title="Punkte">
           <span class="chip-label">Punkte</span>
@@ -36,6 +40,7 @@
       <button class="btn" id="btn-undo" title="Letzten Zug rückgängig machen">↩️<span class="btn-text">Zurück</span></button>
       <button class="btn" id="btn-new" title="Neues Spiel starten">🌱<span class="btn-text">Neu</span></button>
       <button class="btn" id="btn-collection" title="Früchte-Sammlung ansehen">📖<span class="btn-text">Sammlung</span></button>
+      <button class="btn" id="btn-highscores" title="Bestenliste ansehen">🏆<span class="btn-text">Beste</span></button>
       <button class="btn" id="btn-help" title="Spielregeln">💡<span class="btn-text">Hilfe</span></button>
       <button class="btn btn-icon" id="btn-sound" title="Ton an/aus">🔊</button>
     </nav>
@@ -91,6 +96,31 @@
       <button class="modal-close" data-close aria-label="Schließen">✕</button>
       <h2>📖 Deine Früchte-Sammlung</h2>
       <div class="collection" id="collection-grid"></div>
+    </div>
+  </div>
+
+  <!-- Namens-Dialog -->
+  <div class="modal hidden" id="modal-name">
+    <div class="modal-card">
+      <button class="modal-close" data-close aria-label="Schließen">✕</button>
+      <h2>👋 Wie heißt du?</h2>
+      <p class="help-note">Dein Name erscheint in der Bestenliste – so siehst du, wer die meisten Punkte gesammelt hat.</p>
+      <form id="form-name" class="name-form">
+        <input type="text" id="input-name" maxlength="16" placeholder="z. B. Patrick"
+               autocomplete="off" autocapitalize="words">
+        <button type="submit" class="btn btn-primary">Speichern</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Bestenliste -->
+  <div class="modal hidden" id="modal-highscores">
+    <div class="modal-card">
+      <button class="modal-close" data-close aria-label="Schließen">✕</button>
+      <h2>🏆 Bestenliste</h2>
+      <ol class="highscores" id="highscores-list"></ol>
+      <p class="help-note hidden" id="highscores-empty">Noch keine Einträge – spiele eine Runde, dann steht dein Name hier! 🍒</p>
+      <button class="btn" id="btn-change-name">✏️ Namen ändern</button>
     </div>
   </div>
 
